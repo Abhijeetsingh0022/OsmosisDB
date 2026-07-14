@@ -1,101 +1,57 @@
-# <img src="logo.png" align="right" width="120" /> OsmosisDB
+<p align="center">
+  <img src="logo.png" width="160" alt="OsmosisDB Logo" />
+</p>
 
-### Autonomous Self‑Tuning PostgreSQL Middleware
+<h1 align="center">OsmosisDB</h1>
+
+<p align="center">
+  <strong>The world's first autonomous, zero-regression self‑tuning PostgreSQL middleware</strong>
+</p>
+
+<p align="center">
+  Works with standard Postgres clients, Neon DB, Supabase, AWS RDS, GCP Cloud SQL, and more
+</p>
+
+<p align="center">
+  <a href="https://github.com/Abhijeetsingh0022/OsmosisDB"><img src="https://img.shields.io/badge/GitHub-OsmosisDB-blue?logo=github" alt="GitHub Repository" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-green" alt="MIT License" /></a>
+  <a href="https://hub.docker.com"><img src="https://img.shields.io/badge/Docker-Ready-blue?logo=docker" alt="Docker Ready" /></a>
+  <a href="https://pypi.org"><img src="https://img.shields.io/badge/Python-3.11%2B-blue?logo=python" alt="Python Support" /></a>
+</p>
+
+<p align="center">
+  <a href="#-what-is-this">🌐 What is this?</a> • 
+  <a href="#-getting-started">🚀 Getting Started</a> • 
+  <a href="#-system-architecture">📐 Architecture</a> • 
+  <a href="#-the-agent-lifecycle">🧠 Agent Lifecycle</a> • 
+  <a href="#-configuration-parameters">⚙️ Configuration</a> • 
+  <a href="#-rest-api-endpoints">🌐 REST API</a>
+</p>
+
+<p align="center">
+  🏆 <strong>Safety-First:</strong> Built-in EXPLAIN cost checks • 📊 <strong>Clustering:</strong> UMAP + HDBSCAN workload mapping • 🔄 <strong>Drift Detection:</strong> Cosine centroid drift checks
+</p>
+
+<p align="center">
+  <strong>Loved by DBAs & Devs:</strong> Automated index suggestions • Zero client code changes • Self-contained sidecar proxy
+</p>
+
+---
+
+## 🌐 What is this?
 
 **OsmosisDB** is a lightweight, transparent Layer 4 sidecar database proxy and automated DBA agent system. It sits between your application and PostgreSQL, observes SQL traffic, semantically groups workloads using vector embeddings, detects access pattern drift, and safely applies verified schema index optimizations—all with zero human intervention.
 
----
-
-## 🚀 Key Features
-
-* **Transparent Wire Proxy:** Works seamlessly with standard PostgreSQL wire protocol clients, supporting TLS and SCRAM‑SHA‑256 negotiations transparently.
-* **Semantic Workload Clustering:** Normalizes SQL inputs, computes 384-dimension embeddings, and clusters queries dynamically using UMAP + HDBSCAN.
-* **Automatic Drift Detection:** Measures the cosine distance between current query patterns and historical baselines, triggering re-optimization when workloads shift.
-* **Regression-Proof DDL Execution:** Pre-evaluates every proposed index using `EXPLAIN` query planning costs and executes a rollback instantly if plan regression is detected.
-* **Offline-Resilient Memory:** Maintains a local SQLite metadata ledger of applied changes and query footprints, generating optimization plans even when the target database is temporarily unreachable.
-* **DBA Copilot Interface:** Integrates a local REST API and real-time dashboard featuring live diagnostic feeds, telemetry graphs, and a chatbot copilot.
+| Feature | Data Formats |
+| :--- | :--- |
+| **Transparent Wire Proxy** | Postgres v3 Protocol |
+| **Workload Clustering** | 384-dimension Vector Embeddings |
+| **Drift Tracking** | Centroid Cosine Distance Timeline |
+| **Safety Verification** | Pre/Post EXPLAIN Cost Evaluation |
 
 ---
 
-## 📐 System Architecture
-
-OsmosisDB runs as a sidecar proxy directly next to your client application or database host:
-
-```
-┌──────────────────────────────────────────────────────────────────────┐
-│                         APPLICATION CLIENTS                          │
-└───────────────────────────────┬──────────────────────────────────────┘
-                                │  Postgres Wire Protocol (port 6432)
-                                ▼
-┌──────────────────────────────────────────────────────────────────────┐
-│                       OSMOSISDB TCP PROXY                            │
-│  - Bidirectional forwarding tasks (client⇄server)                    │
-│  - Supports TLS & SCRAM-SHA-256                                      │
-└───────────┬──────────────────────────────────────────────┬───────────┘
-            │  Transparent Forward                         │ Async Push
-            ▼                                              ▼
-┌─────────────────────────┐                     ┌─────────────────────────┐
-│  TARGET DATABASE (NEON) │                     │   QUEUE & SQL RECORDER  │
-│  - Production tables    │                     │  - Normalization        │
-│  - Catalog statistics   │                     │  - Batched writes to DB │
-└──────────▲──────────────┘                     └───────────┬─────────────┘
-            │ DDL / Explain                                  ▼
-┌──────────┴───────────────────────────────────────────────────────────────┐
-│                    LOCAL SQLITE PERSISTENT LOGS                          │
-│  - Query logs, centroids, drift history, optimization ledger             │
-│  - Replica of applied DDL indexes for offline simulation                 │
-└──────────▲───────────────────────────────────────────────────────────────┐
-            │  Orchestrator Coordination Loop
-┌──────────┴───────────────────────────────────────────────────────────────┐
-│                        MULTI-AGENT SCHEDULER                             │
-│  - Observer Agent  • Learner Agent  • Drift Agent                       │
-│  - Planner Agent   • Executor Agent • Benchmark Agent                   │
-└──────────────────────────────────────────────────────────────────────────┘
-```
-
----
-
-## 🧠 The Agent Lifecycle
-
-Six specialized background agents collaborate continuously to monitor, plan, verify, and execute structural schema improvements:
-
-### 1. Observer Agent
-Pulls usage statistics and metadata from PostgreSQL catalog tables:
-* **Index definitions** from `pg_indexes`.
-* **Index scan activity** from `pg_stat_user_indexes`.
-* **Sequential vs. index scan rates** from `pg_stat_user_tables`.
-
-### 2. Pattern Learner Agent
-Extracts access patterns from intercepted queries:
-1. Normalizes SQL syntax into parameter-less fingerprints (e.g. `SELECT * FROM users WHERE age > 30` → `select * from users where age > ?`).
-2. Encodes SQL text into a 384-dimensional dense vector using the `sentence-transformers/all-MiniLM-L6-v2` model.
-3. Groups query signatures using **UMAP** dimension reduction and **HDBSCAN** clustering.
-4. Falls back to direct template categorization when the template count is below the clustering threshold (`min_queries_for_clustering`).
-
-### 3. Drift Detector Agent
-Calculates the **cosine distance** between the centroids of recent query clusters and historical baselines:
-$$\text{Drift} = 1.0 - \frac{A \cdot B}{\|A\| \|B\|}$$
-If the workload drift score exceeds `drift_threshold`, a planning cycle is immediately triggered.
-
-### 4. Optimization Planner Agent
-Recommends targeted schema changes:
-* Scans query clusters for high-frequency `WHERE` and `JOIN ... ON` columns.
-* Matches column sets against active database indexes.
-* Formulates `CREATE INDEX CONCURRENTLY` proposals and matching `DROP INDEX` rollback scripts.
-
-### 5. Execution Agent
-Applies DDL statements during scheduled maintenance windows:
-1. Captures pre-optimization planning costs via `EXPLAIN (FORMAT JSON)`.
-2. Executes the optimization DDL.
-3. Re-runs `EXPLAIN (FORMAT JSON)` on a representative query template.
-4. Compares post-optimization cost against the baseline. If cost increases, the change is **automatically rolled back** to protect database integrity.
-
-### 6. Benchmark Agent
-Replays representative workloads to compile and record p50, p95, and p99 query latency statistics directly within the database log.
-
----
-
-## 🛠️ Getting Started
+## 🚀 Getting Started
 
 ### Prerequisites
 * Python 3.11 or later
@@ -106,7 +62,7 @@ Replays representative workloads to compile and record p50, p95, and p99 query l
 ### Installation
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-org/osmosisdb.git
+   git clone https://github.com/Abhijeetsingh0022/OsmosisDB.git
    cd osmosisdb
    ```
 2. Install python package and dependencies:
@@ -131,6 +87,59 @@ Replays representative workloads to compile and record p50, p95, and p99 query l
 3. Update your application database connection settings to point to the OsmosisDB proxy port:
    * **Host:** `127.0.0.1`
    * **Port:** `6432`
+
+---
+
+## 📐 System Architecture
+
+OsmosisDB runs as a sidecar proxy directly next to your client application or database host:
+
+```
+┌──────────────────────────────────────────────────────────────────────┐
+│                         APPLICATION CLIENTS                          │
+└───────────────────────────────┬──────────────────────────────────────┘
+                                │  Postgres Wire Protocol (port 6432)
+                                ▼
+┌──────────────────────────────────────────────────────────────────────┐
+│                       OSMOSISDB TCP PROXY                            │
+│  - Bidirectional forwarding tasks (client⇄server)                    │
+│  - Supports TLS & SCRAM-SHA-256                                      │
+└───────────┬──────────────────────────────────────────────┬───────────┘
+            │  Transparent Forward                         │ Async Push
+            ▼                                              ▼
+┌─────────────────────────┐                     ┌─────────────────────────┐
+│  TARGET DATABASE (NEON) │                     │   QUEUE & SQL RECORDER  │
+│  - Production tables    │                     │  - Normalization        │
+│  - Batched writes to DB │                     │  - SQLite logging       │
+└──────────▲──────────────┘                     └───────────┬─────────────┘
+            │ DDL / Explain                                  ▼
+┌──────────┴───────────────────────────────────────────────────────────────┐
+│                    LOCAL SQLITE PERSISTENT LOGS                          │
+│  - Query logs, centroids, drift history, optimization ledger             │
+│  - Replica of applied DDL indexes for offline simulation                 │
+└──────────▲───────────────────────────────────────────────────────────────┐
+            │  Orchestrator Coordination Loop
+┌──────────┴───────────────────────────────────────────────────────────────┐
+│                        MULTI-AGENT SCHEDULER                             │
+│  - Observer Agent  • Learner Agent  • Drift Agent                       │
+│  - Planner Agent   • Executor Agent • Benchmark Agent                   │
+└──────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 🧠 The Agent Lifecycle
+
+Six specialized background agents collaborate continuously to monitor, plan, verify, and execute structural schema improvements:
+
+* **Observer Agent:** Pulls usage statistics, index definitions from `pg_indexes`, scan activity from `pg_stat_user_indexes`, and sequential vs. index scan rates from `pg_stat_user_tables`.
+* **Pattern Learner Agent:** Normalizes SQL syntax into parameter-less fingerprints (e.g. `SELECT * FROM users WHERE age > 30` -> `select * from users where age > ?`), encodes SQL text into 384-dimensional vector embeddings via `sentence-transformers/all-MiniLM-L6-v2`, and groups query signatures using UMAP + HDBSCAN.
+* **Drift Detector Agent:** Calculates the cosine distance between the centroids of recent query clusters and historical baselines:
+  $$\text{Drift} = 1.0 - \frac{A \cdot B}{\|A\| \|B\|}$$
+  If the workload drift score exceeds `drift_threshold`, a planning cycle is immediately triggered.
+* **Optimization Planner Agent:** Scans query clusters for high-frequency `WHERE` and `JOIN ... ON` columns, matches them against active database indexes, and formulates `CREATE INDEX CONCURRENTLY` proposals and matching `DROP INDEX` rollback scripts.
+* **Execution Agent:** Captures pre-optimization planning costs via `EXPLAIN (FORMAT JSON)`, executes the DDL, re-runs `EXPLAIN` on a representative query template, and automatically rolls back the change if cost increases.
+* **Benchmark Agent:** Replays representative workloads to compile and record p50, p95, and p99 query latency statistics directly within the database log.
 
 ---
 
