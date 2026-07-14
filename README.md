@@ -1,4 +1,4 @@
-# OsmosisDB
+# <img src="logo.png" align="right" width="120" /> OsmosisDB
 
 ### Autonomous Self‑Tuning PostgreSQL Middleware
 

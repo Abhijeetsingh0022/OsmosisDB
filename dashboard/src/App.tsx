@@ -16,6 +16,8 @@ import {
   Settings
 } from 'lucide-react';
 
+import logoImg from './assets/logo.png';
+
 const API_BASE = 'http://127.0.0.1:8080';
 
 export default function App() {
@@ -356,9 +358,7 @@ export default function App() {
         <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
           {/* Logo brand */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Database size={16} color="white" />
-            </div>
+            <img src={logoImg} style={{ width: '32px', height: '32px', borderRadius: '8px', objectFit: 'cover' }} alt="OsmosisDB Logo" />
             <span style={{ fontWeight: 700, fontSize: '1.05rem', color: 'var(--text-primary)' }}>OsmosisDB</span>
           </div>
 
