@@ -31,8 +31,7 @@ Before setting up the project, make sure you have the following installed:
    python -m venv .venv
    source .venv/bin/activate
    pip install --upgrade pip
-   pip install -r requirements.txt
-   pip install pytest pytest-asyncio pytest-cov
+   pip install -e ".[dev]"
    ```
 3. Initialize the development environment:
    ```bash

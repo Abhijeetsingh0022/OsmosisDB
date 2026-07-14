@@ -111,7 +111,7 @@ Replays representative workloads to compile and record p50, p95, and p99 query l
    ```
 2. Install python package and dependencies:
    ```bash
-   pip install -r requirements.txt
+   pip install .
    ```
 3. Set up configurations:
    ```bash
