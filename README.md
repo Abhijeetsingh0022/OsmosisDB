@@ -167,4 +167,8 @@ This project is built and maintained by the OsmosisDB open-source community.
 
 ## 📜 License
 
-OsmosisDB is licensed under the **MIT License**. See [LICENSE](LICENSE) for details.
+This project is dual-licensed:
+* Source code and site dashboard content are licensed under the **[MIT License](LICENSE-MIT)**.
+* Query templates, access patterns, and collected workload logs are dedicated to the public domain under **[CC0 1.0 Universal](LICENSE-CC0)**.
+
+See **[LICENSE](LICENSE)** for the full policy details.
