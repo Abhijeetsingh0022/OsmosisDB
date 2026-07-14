@@ -1,0 +1,35 @@
+# OsmosisDB Configuration
+# Copy to config.toml and edit values.
+
+[proxy]
+listen_host = "127.0.0.1"
+listen_port = 6432
+
+[postgres]
+# Neon DB connection string (override with OSMOSIS_PG_DSN env var)
+dsn = "postgres://user:password@ep-example-123456.us-east-2.aws.neon.tech/neondb?sslmode=require"
+
+[embedding]
+model = "all-MiniLM-L6-v2"
+
+[intelligence]
+drift_threshold = 0.3
+pattern_interval_seconds = 300
+min_queries_for_clustering = 50
+
+[maintenance]
+# Cron expressions for allowed execution windows (UTC)
+windows = ["0 2 * * *"]  # 2 AM daily
+
+[approval]
+# "auto" = execute during maintenance window, "manual" = wait for REST/dashboard approval
+mode = "auto"
+
+[dashboard]
+host = "127.0.0.1"
+port = 8080
+
+[groq]
+# Optional — leave empty to use template-based explanations
+api_key = ""
+model = "llama-3.3-70b-versatile"

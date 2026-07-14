@@ -1,0 +1,134 @@
+# ==============================================================================
+# OsmosisDB - Git Ignore Specifications
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# 1. Python Compilation and Runtime Cache
+# ------------------------------------------------------------------------------
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Ruff linter cache
+.ruff_cache/
+
+# ------------------------------------------------------------------------------
+# 2. Distribution, Packaging, and Builds
+# ------------------------------------------------------------------------------
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# ------------------------------------------------------------------------------
+# 3. Testing, Coverage, and Quality Assurance
+# ------------------------------------------------------------------------------
+.pytest_cache/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+htmlcov/
+
+# ------------------------------------------------------------------------------
+# 4. Local Virtual Environments
+# ------------------------------------------------------------------------------
+# Exclude Python virtual environment folders
+.venv/
+venv/
+ENV/
+env/
+active/
+
+# ------------------------------------------------------------------------------
+# 5. Environment Secrets and Local Configurations
+# ------------------------------------------------------------------------------
+# Exclude local environment files containing private keys, DSNs, and credentials
+.env
+.env*.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.env
+config.toml
+
+# ------------------------------------------------------------------------------
+# 6. SQLite Databases and Agent History Ledgers
+# ------------------------------------------------------------------------------
+# Exclude SQLite data stores (e.g. ~/.osmosisdb.sqlite replication and mock logs)
+*.sqlite
+*.sqlite-journal
+*.sqlite-shm
+*.sqlite-wal
+
+# ------------------------------------------------------------------------------
+# 7. Frontend (React / Vite / Node.js) Build Dependencies
+# ------------------------------------------------------------------------------
+# Node package dependencies
+node_modules/
+/dashboard/node_modules/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Vite production build outputs
+/dashboard/dist/
+/dashboard/out/
+
+# TypeScript compiler cache
+*.tsbuildinfo
+
+# ------------------------------------------------------------------------------
+# 8. Editor and IDE Configuration Files
+# ------------------------------------------------------------------------------
+# JetBrains (PyCharm, WebStorm, etc.)
+.idea/
+
+# Visual Studio Code
+.vscode/
+!.vscode/extensions.json
+
+# Visual Studio
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# ------------------------------------------------------------------------------
+# 9. Operating System and System Files
+# ------------------------------------------------------------------------------
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini

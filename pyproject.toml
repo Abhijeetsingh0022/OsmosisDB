@@ -1,0 +1,52 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "osmosisdb"
+version = "0.1.0"
+description = "Intelligent PostgreSQL middleware for automatic query optimization"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "MIT"}
+
+dependencies = [
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.30.0",
+    "psycopg[binary]>=3.2.0",
+    "sqlglot>=26.0.0",
+    "click>=8.1.0",
+    "pydantic>=2.9.0",
+    "pydantic-settings>=2.5.0",
+    "apscheduler>=3.10.0",
+    "sentence-transformers>=3.0.0",
+    "hdbscan>=0.8.38",
+    "umap-learn>=0.5.6",
+    "sqlite-vec>=0.1.0",
+    "langchain>=0.3.0",
+    "langchain-groq>=0.2.0",
+    "langchain-community>=0.3.0",
+    "langgraph>=0.2.0",
+    "tomli>=2.0.0;python_version<'3.11'",
+    "sse-starlette>=2.1.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.24.0",
+    "httpx>=0.27.0",
+    "ruff>=0.6.0",
+]
+
+[project.scripts]
+osmosisdb = "osmosisdb.cli:cli"
+
+[tool.setuptools.packages.find]
+include = ["osmosisdb*"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 120
+
+
