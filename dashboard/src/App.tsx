@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import './App.css';
 import { 
   Activity, 
   Database, 
@@ -17,12 +18,14 @@ import {
 } from 'lucide-react';
 
 import logoImg from './assets/logo.png';
+import AgentFlowCanvas from './components/AgentFlowCanvas';
 
 const API_BASE = 'http://127.0.0.1:8080';
 
 export default function App() {
   // Navigation Tabs matching screenshot top nav
-  const [activeNavTab, setActiveNavTab] = useState<'inbox' | 'workloads' | 'sandbox' | 'settings'>('inbox');
+  const [activeNavTab, setActiveNavTab] = useState<'inbox' | 'workloads' | 'sandbox' | 'settings' | 'agents'>('inbox');
+  const switchTab = (tab: typeof activeNavTab) => { setActiveNavTab(tab); };
   
   // Data States
   const [queries, setQueries] = useState<any[]>([]);
@@ -365,7 +368,7 @@ export default function App() {
           {/* Navigation links styled like the screenshot tab list */}
           <nav style={{ display: 'flex', gap: '4px' }}>
             <button 
-              onClick={() => setActiveNavTab('inbox')}
+              onClick={() => switchTab('inbox')}
               className={`nav-tab ${activeNavTab === 'inbox' ? 'active' : ''}`}
             >
               Advisory Queue <span style={{ 
@@ -379,22 +382,28 @@ export default function App() {
               }}>{recommendations.length}</span>
             </button>
             <button 
-              onClick={() => setActiveNavTab('workloads')}
+              onClick={() => switchTab('workloads')}
               className={`nav-tab ${activeNavTab === 'workloads' ? 'active' : ''}`}
             >
               Workloads
             </button>
             <button 
-              onClick={() => setActiveNavTab('sandbox')}
+              onClick={() => switchTab('sandbox')}
               className={`nav-tab ${activeNavTab === 'sandbox' ? 'active' : ''}`}
             >
               SQL AST Analyzer
             </button>
             <button 
-              onClick={() => setActiveNavTab('settings')}
+              onClick={() => switchTab('settings')}
               className={`nav-tab ${activeNavTab === 'settings' ? 'active' : ''}`}
             >
               Settings
+            </button>
+            <button 
+              onClick={() => switchTab('agents')}
+              className={`nav-tab ${activeNavTab === 'agents' ? 'active' : ''}`}
+            >
+              Agent Flow
             </button>
           </nav>
         </div>
@@ -1040,6 +1049,20 @@ export default function App() {
         </div>
       )}
 
+      {activeNavTab === 'agents' && (
+        <AgentFlowCanvas
+          queries={queries}
+          clusters={clusters}
+          driftTimeline={driftTimeline}
+          recommendations={recommendations}
+          optimizations={optimizations}
+          indexHealth={indexHealth}
+          chatHistory={chatHistory}
+          connectionStatus={connectionStatus}
+          pgStatus={pgStatus}
+          onNavigateTab={switchTab}
+        />
+      )}
     </div>
   );
 }
